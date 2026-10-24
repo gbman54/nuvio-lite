@@ -117,10 +117,10 @@ This is the recommended route for TizenBrew. The repository root contains the mo
 
 1. Commit and push the project to the public GitHub repository `gbman54/nuvio-lite` on the `main` branch. TizenBrew loads the module metadata and app files from GitHub, while its service bootstrap downloads the proxy service sources from jsDelivr when the module starts.
 2. Make sure the TV has TizenBrew installed and can reach GitHub/jsDelivr over the internet.
-3. Open TizenBrew on the TV and use its **Modules** screen to add the GitHub module `gh/gbman54/nuvio-lite@<commit-sha>`. Replace `<commit-sha>` with the full commit hash you want to install (shown on the GitHub repository's latest commit page).
+3. Open TizenBrew on the TV and use its **Modules** screen to add the GitHub module `gh/gbman54/nuvio-lite`.
 4. Launch **Nuvio TV Lite** from TizenBrew. The module starts EngineFS on port `2710` and the plugin network service on port `2711` automatically.
 
-Use a commit-pinned module identifier when installing or updating. For example, to install the current navigation redesign, add `gh/gbman54/nuvio-lite@f753db463345b6887f8f66bd971e7d5c365d512d`. After a future update is pushed, replace the hash with that update's commit hash, then remove the old module and add the new identifier. Each commit hash gets a distinct URL, so the TV cannot silently reuse the cached `main` copy. The unpinned identifier `gh/gbman54/nuvio-lite` follows `main`, but jsDelivr can cache branch files for up to 12 hours; reinstalling the same identifier does not clear that cache.
+Use the same module identifier, `gh/gbman54/nuvio-lite`, for future updates. TizenBrew fetches GitHub module files through jsDelivr, which may keep branch files cached for up to 12 hours. The TV should pick up pushed updates after that cache expires; removing and re-adding the same identifier does not speed it up. ([jsDelivr cache behavior](https://github.com/jsdelivr/jsdelivr#caching))
 
 ### Installing on Samsung Smart TV as a standalone WGT
 
