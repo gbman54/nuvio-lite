@@ -1,0 +1,13 @@
+{
+  "name": "nuvio-lite-tizen3",
+  "version": "1.0.0",
+  "description": "Lightweight pure ES5 streaming app for Samsung Tizen 3.0",
+  "main": "start-dev.js",
+  "scripts": {
+    "start": "node start-dev.js",
+    "package": "node scripts/package_wgt.js",
+    "verify": "node scripts/verify_es5.js"
+  },
+  "author": "Nuvio Lite Team",
+  "license": "MIT"
+}
