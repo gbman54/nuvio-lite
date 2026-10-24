@@ -29,7 +29,8 @@ Reverse-engineered from Nuvio TV (`NuvioTV-Tizen-1.2.9.wgt`), Nuvio TV Lite stri
 
 ```text
 rea/
-├── package.json                 # Project scripts (start, verify, package)
+├── package.json                 # Project scripts and TizenBrew module manifest
+├── tizenbrew-service.js         # Starts local media and plugin services in TizenBrew
 ├── start-dev.js                 # Local dev server (HTTP 8080 + Proxy 2710 + Plugin 2711)
 ├── nuvio-lite-tizen3.wgt        # Ready-to-install Tizen 3.0 package
 │
@@ -69,7 +70,8 @@ rea/
 
 ### 1. Prerequisites
 - **Node.js** (v18 or higher recommended)
-- **Samsung Tizen Studio CLI** and a valid signing profile (required to create an installable TV package)
+- **TizenBrew** installed on the TV for GitHub module installation
+- **Samsung Tizen Studio CLI** and a valid signing profile (only required for standalone WGT packaging)
 
 ### 2. Local Development & Testing
 
@@ -98,7 +100,7 @@ npm run verify
 ```
 *Validates `api.js`, `app.js`, `player.js`, and `tizen-remote.js` using Acorn `ecmaVersion: 5`.*
 
-### Packaging Tizen WGT
+### Packaging a standalone Tizen WGT
 Create a signed installation package with the Tizen CLI. Set these PowerShell variables to your Tizen Studio CLI path and certificate profile name first:
 ```bash
 $env:TIZEN_CLI = 'C:\tizen-studio\tools\ide\bin\tizen.bat'
@@ -109,16 +111,27 @@ This runs `tizen build-web` and `tizen package -t wgt -s <profile>`, then writes
 
 ---
 
-## Installing on Samsung Smart TV (Tizen 3.0)
+## Installing through TizenBrew (GitHub module)
 
-### Recommended: TizenBrew Installer Desktop
+This is the recommended route for TizenBrew. The repository root contains the module manifest, and the module serves `tizen-app/index.html` through TizenBrew. It does not require a Samsung signing certificate or a `.wgt` file.
+
+1. Commit and push the project to the public GitHub repository `gbman54/nuvio-lite` on the `main` branch. TizenBrew loads the module metadata and app files from GitHub, while its service bootstrap downloads the proxy service sources from jsDelivr when the module starts.
+2. Make sure the TV has TizenBrew installed and can reach GitHub/jsDelivr over the internet.
+3. Open TizenBrew on the TV and use its **Modules** screen to add the GitHub module `gh/gbman54/nuvio-lite`.
+4. Launch **Nuvio TV Lite** from TizenBrew. The module starts EngineFS on port `2710` and the plugin network service on port `2711` automatically.
+
+Updates are picked up from the repository branch, subject to TizenBrew/CDN caching. If a just-pushed change does not appear, refresh or reinstall the module in TizenBrew.
+
+### Installing on Samsung Smart TV as a standalone WGT
+
+### TizenBrew Installer Desktop
 
 1. Build a signed package as described above. This creates `nuvio-lite-tizen3.wgt` in the project root.
 2. Connect the TV and PC to the same network. On the TV, open **Apps**, enter `12345` on the remote, enable **Developer Mode**, set **Host PC IP** to your PC's local network IP address, confirm, and restart the TV.
 3. On the PC, run [TizenBrew Installer Desktop](https://github.com/reisxd/TizenBrewInstaller/releases). Choose the option to install a local `.wgt`/`.tpk` file and select `nuvio-lite-tizen3.wgt`.
 4. When installation finishes, launch **Nuvio TV Lite** from the TV's Apps screen.
 
-TizenBrew itself is the TV-side app/module manager. For a local project WGT, use its companion **TizenBrew Installer Desktop**. For **Install from GitHub**, publish a GitHub Release containing the signed `.wgt` asset; the installer installs the release package rather than building the source tree. The packaged app includes the EngineFS and Plugin background services, so you do not need to run `npm start` on the PC during playback.
+For this standalone WGT route, use TizenBrew Installer Desktop to install the signed `.wgt`. The package includes the EngineFS and Plugin background services, so you do not need to run `npm start` on the PC during playback. The GitHub module route above is separate and does not use a WGT release.
 
 ### Alternative: Tizen Studio CLI
 
@@ -130,7 +143,7 @@ tizen install -n nuvio-lite-tizen3.wgt -t <TV_DEVICE_ID>
 ```
 Samsung's CLI may require the WGT to be packaged with a certificate profile accepted by the TV. See the [Samsung TV CLI guide](https://developer.samsung.com/smarttv/develop/getting-started/using-sdk/command-line-interface.html?device=htv) for certificate, packaging, and install details.
 
-### Launch and Debug
+### Launch and Debug (standalone WGT)
 
 - Launch **Nuvio TV Lite** from the TV's Apps screen. It starts `NuvioTV030.EngineFsService` and `NuvioTV030.PluginService` in the background and initializes `webapis.avplay` for hardware-accelerated playback.
 - For live debugging, open Chrome on the PC and visit `chrome://inspect`, then configure the TV's IP address and port `26101`.

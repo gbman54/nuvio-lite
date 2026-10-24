@@ -46,6 +46,8 @@
     proxyBase: 'http://127.0.0.1:2710',
     subtitleFetchServiceBase: 'http://127.0.0.1:2711',
     proxyAvailable: false,
+    proxyProbeTimer: null,
+    proxyProbeAttempts: 0,
     activeHeaders: null,
     externalSubtitleTracks: [],
     externalSubtitleElements: [],
@@ -67,10 +69,19 @@
 
       this._bindHtml5Events();
       this.launchTizenService();
+      this.proxyProbeAttempts = 0;
       this.probeProxy();
     },
 
+    isTizenBrewModule: function() {
+      return window.location && window.location.port === '8081' &&
+        window.location.pathname.indexOf('/module/') === 0;
+    },
+
     launchTizenService: function() {
+      // TizenBrew starts the module's Node services through serviceFile.
+      // There is no separately installed WGT service application to launch.
+      if (this.isTizenBrewModule()) return;
       // If running on Samsung Smart TV, launch the background EngineFS Service
       if (window.tizen && window.tizen.application && window.tizen.ApplicationControl) {
         try {
@@ -95,25 +106,41 @@
         xhr.onload = function() {
           if (xhr.status === 200) {
             self.proxyAvailable = true;
+            self.proxyProbeAttempts = 0;
             console.log('[Player] EngineFS Proxy detected active on ' + self.proxyBase);
           } else {
             self.proxyAvailable = false;
           }
+          self._retryProxyProbe();
           if (cb) cb(self.proxyAvailable);
         };
         xhr.onerror = function() {
           self.proxyAvailable = false;
+          self._retryProxyProbe();
           if (cb) cb(false);
         };
         xhr.ontimeout = function() {
           self.proxyAvailable = false;
+          self._retryProxyProbe();
           if (cb) cb(false);
         };
         xhr.send();
       } catch (e) {
         self.proxyAvailable = false;
+        self._retryProxyProbe();
         if (cb) cb(false);
       }
+    },
+
+    _retryProxyProbe: function() {
+      var self = this;
+      if (!this.isTizenBrewModule() || this.proxyAvailable || this.proxyProbeTimer ||
+          this.proxyProbeAttempts >= 40) return;
+      this.proxyProbeAttempts += 1;
+      this.proxyProbeTimer = window.setTimeout(function() {
+        self.proxyProbeTimer = null;
+        self.probeProxy();
+      }, 1000);
     },
 
     buildProxyUrl: function(targetUrl, headers) {
