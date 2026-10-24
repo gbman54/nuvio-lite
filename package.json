@@ -6,7 +6,6 @@
   "packageType": "app",
   "appName": "Nuvio TV Lite",
   "appPath": "tizen-app/index.html",
-  "keys": ["MediaPlay", "MediaPause", "MediaPlayPause", "MediaStop", "MediaFastForward", "MediaRewind", "MediaTrackPrevious", "MediaTrackNext"],
   "serviceFile": "tizenbrew-service.js",
   "evaluateScriptOnDocumentStart": false,
   "scripts": {

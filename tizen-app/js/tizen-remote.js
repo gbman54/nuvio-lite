@@ -40,9 +40,7 @@
           'MediaPlayPause',
           'MediaStop',
           'MediaFastForward',
-          'MediaRewind',
-          'Return',
-          'Back'
+          'MediaRewind'
         ];
 
         for (var i = 0; i < keysToRegister.length; i++) {
