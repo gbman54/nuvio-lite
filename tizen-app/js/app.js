@@ -51,6 +51,8 @@
     episodeIndex: 0,
     sourceIndex: 0,
     installedAddonIndex: 0,
+    addonFocusSide: 'left',
+    addonFocusIndex: 0,
     currentPlaybackMediaId: null,
     currentPlaybackMediaType: 'movie',
     playbackSubtitleRequestId: 0,
@@ -203,11 +205,49 @@
         });
       }
 
+      var customAddonInput = document.getElementById('input-custom-addon');
+      if (customAddonInput) {
+        customAddonInput.addEventListener('focus', function() {
+          if (self.currentView !== VIEW_ADDONS) return;
+          self.addonFocusSide = 'left';
+          self.addonFocusIndex = 2;
+          self.updateFocus();
+        });
+        customAddonInput.addEventListener('click', function() {
+          if (self.currentView !== VIEW_ADDONS) return;
+          self.addonFocusSide = 'left';
+          self.addonFocusIndex = 2;
+          self.updateFocus();
+        });
+      }
+
       var btnCloseAddons = document.getElementById('btn-close-addons');
       if (btnCloseAddons) {
         btnCloseAddons.addEventListener('click', function() {
           self.closeAddonsManager();
         });
+      }
+
+      var addonFocusable = [
+        document.getElementById('btn-install-pengu'),
+        document.getElementById('btn-install-torrentio'),
+        customAddonInput,
+        btnSaveCustom,
+        btnCloseAddons
+      ];
+      for (var addonControlIndex = 0; addonControlIndex < addonFocusable.length; addonControlIndex++) {
+        (function(control, controlIndex) {
+          if (!control) return;
+          control.addEventListener('focus', function() {
+            if (self.currentView !== VIEW_ADDONS) return;
+            if (controlIndex === 4) self.addonFocusSide = 'right';
+            else {
+              self.addonFocusSide = 'left';
+              self.addonFocusIndex = controlIndex;
+            }
+            self.updateFocus();
+          });
+        })(addonFocusable[addonControlIndex], addonControlIndex);
       }
 
       var btnPlay = document.getElementById('btn-play');
@@ -796,6 +836,8 @@
     openAddonsManager: function() {
       this.currentView = VIEW_ADDONS;
       this.installedAddonIndex = 0;
+      this.addonFocusSide = 'left';
+      this.addonFocusIndex = 0;
       var modal = document.getElementById('addons-modal');
       if (modal) modal.style.display = 'block';
       this.renderInstalledAddons();
@@ -994,12 +1036,36 @@
             (this.playerTrackOptions[t] && this.playerTrackOptions[t].selected ? ' selected' : '');
         }
       } else if (this.currentView === VIEW_ADDONS) {
+        var penguButton = document.getElementById('btn-install-pengu');
+        var torrentioButton = document.getElementById('btn-install-torrentio');
+        var customAddonInput = document.getElementById('input-custom-addon');
+        var saveAddonButton = document.getElementById('btn-save-custom-addon');
+        var closeAddonButton = document.getElementById('btn-close-addons');
+        var focusedLeftControl = this.addonFocusIndex;
+        if (penguButton) {
+          penguButton.className = 'action-btn' + (this.addonFocusSide === 'left' && focusedLeftControl === 0 ? ' focused' : '');
+        }
+        if (torrentioButton) {
+          torrentioButton.className = 'action-btn action-btn-secondary' + (this.addonFocusSide === 'left' && focusedLeftControl === 1 ? ' focused' : '');
+        }
+        if (customAddonInput) {
+          customAddonInput.className = 'custom-addon-input' + (this.addonFocusSide === 'left' && focusedLeftControl === 2 ? ' focused' : '');
+          if (this.addonFocusSide === 'left' && focusedLeftControl === 2 && document.activeElement !== customAddonInput) {
+            customAddonInput.focus();
+          }
+        }
+        if (saveAddonButton) {
+          saveAddonButton.className = 'action-btn' + (this.addonFocusSide === 'left' && focusedLeftControl === 3 ? ' focused' : '');
+        }
+        if (closeAddonButton) {
+          closeAddonButton.className = 'action-btn action-btn-secondary' + (this.addonFocusSide === 'right' && this.installedAddonIndex >= document.querySelectorAll('.installed-item').length ? ' focused' : '');
+        }
         var addonItems = document.querySelectorAll('.installed-item');
         var addonList = document.getElementById('installed-addons-list');
         for (var addonIdx = 0; addonIdx < addonItems.length; addonIdx++) {
-          addonItems[addonIdx].className = 'installed-item clearfix' + (addonIdx === this.installedAddonIndex ? ' focused' : '');
+          addonItems[addonIdx].className = 'installed-item clearfix' + (this.addonFocusSide === 'right' && addonIdx === this.installedAddonIndex ? ' focused' : '');
         }
-        if (addonList && addonItems[this.installedAddonIndex]) {
+        if (this.addonFocusSide === 'right' && addonList && addonItems[this.installedAddonIndex]) {
           var focusedItem = addonItems[this.installedAddonIndex];
           var itemTop = focusedItem.offsetTop - addonList.offsetTop;
           var itemBottom = itemTop + focusedItem.offsetHeight;
@@ -1226,21 +1292,63 @@
     _handleAddonsNavigation: function(keyCode) {
       var K = RemoteKeys;
       var addons = ApiClient.getInstalledAddons();
-      if (keyCode === K.KEY_DOWN) {
-        if (this.installedAddonIndex < addons.length - 1) this.installedAddonIndex++;
+      var input = document.getElementById('input-custom-addon');
+      if (keyCode === K.KEY_UP || keyCode === K.KEY_DOWN) {
+        var direction = keyCode === K.KEY_DOWN ? 1 : -1;
+        if (this.addonFocusSide === 'left') {
+          this.addonFocusIndex = Math.max(0, Math.min(3, this.addonFocusIndex + direction));
+        } else {
+          this.installedAddonIndex = Math.max(0, Math.min(addons.length, this.installedAddonIndex + direction));
+        }
         this.updateFocus();
         return true;
       }
-      if (keyCode === K.KEY_UP) {
-        if (this.installedAddonIndex > 0) this.installedAddonIndex--;
+      if (keyCode === K.KEY_RIGHT && this.addonFocusSide === 'left' && this.addonFocusIndex !== 2) {
+        this.addonFocusSide = 'right';
+        this.installedAddonIndex = 0;
         this.updateFocus();
         return true;
       }
-      if (keyCode === K.KEY_ENTER && addons[this.installedAddonIndex]) {
-        ApiClient.toggleAddon(addons[this.installedAddonIndex].id);
-        this.renderInstalledAddons();
-        this.updateSourceIndicator();
+      if (keyCode === K.KEY_LEFT && this.addonFocusSide === 'right') {
+        this.addonFocusSide = 'left';
+        this.addonFocusIndex = 3;
+        this.updateFocus();
         return true;
+      }
+      if (this.addonFocusSide === 'left' && this.addonFocusIndex === 2 && input && document.activeElement === input) {
+        // Let the TV's text input handle Enter and left/right caret movement.
+        return false;
+      }
+      if (keyCode === K.KEY_ENTER) {
+        if (this.addonFocusSide === 'right') {
+          if (this.installedAddonIndex < addons.length && addons[this.installedAddonIndex]) {
+            ApiClient.toggleAddon(addons[this.installedAddonIndex].id);
+            this.renderInstalledAddons();
+            this.updateSourceIndicator();
+          } else {
+            this.closeAddonsManager();
+          }
+          return true;
+        }
+        if (this.addonFocusIndex === 0) {
+          var penguButton = document.getElementById('btn-install-pengu');
+          if (penguButton) penguButton.click();
+          return true;
+        }
+        if (this.addonFocusIndex === 1) {
+          var torrentioButton = document.getElementById('btn-install-torrentio');
+          if (torrentioButton) torrentioButton.click();
+          return true;
+        }
+        if (this.addonFocusIndex === 2 && input) {
+          input.focus();
+          return false;
+        }
+        if (this.addonFocusIndex === 3) {
+          var saveButton = document.getElementById('btn-save-custom-addon');
+          if (saveButton) saveButton.click();
+          return true;
+        }
       }
       return false;
     },
