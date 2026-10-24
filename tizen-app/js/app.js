@@ -847,6 +847,8 @@
 
     closeAddonsManager: function() {
       var modal = document.getElementById('addons-modal');
+      var customInput = document.getElementById('input-custom-addon');
+      if (customInput && document.activeElement === customInput) customInput.blur();
       if (modal) modal.style.display = 'none';
       this.currentView = VIEW_GRID;
       this.updateFocus();
@@ -1052,6 +1054,8 @@
           customAddonInput.className = 'custom-addon-input' + (this.addonFocusSide === 'left' && focusedLeftControl === 2 ? ' focused' : '');
           if (this.addonFocusSide === 'left' && focusedLeftControl === 2 && document.activeElement !== customAddonInput) {
             customAddonInput.focus();
+          } else if ((this.addonFocusSide !== 'left' || focusedLeftControl !== 2) && document.activeElement === customAddonInput) {
+            customAddonInput.blur();
           }
         }
         if (saveAddonButton) {
