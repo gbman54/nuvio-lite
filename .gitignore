@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build and environment artifacts
+.env
+*.log
+
+# Reverse-engineering scratch files
+extracted_nuvio/
+NuvioTV-Tizen-1.2.9.wgt
+
+# OS generated files
+.DS_Store
+Thumbs.db

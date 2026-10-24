@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Nuvio TV Lite</title>
+  
+  <!-- Samsung Tizen WebAPIs for AVPlay and TV remote (only loaded on Tizen Smart TV) -->
+  <script>
+    if (/Tizen|SmartTV/i.test(navigator.userAgent) || typeof window.tizen !== 'undefined') {
+      var s = document.createElement('script');
+      s.src = '$WEBAPIS/webapis/webapis.js';
+      document.write(s.outerHTML);
+    } else {
+      // HLS playback engine only needed for PC browser testing fallback
+      var h = document.createElement('script');
+      h.src = 'js/hls.min.js';
+      document.write(h.outerHTML);
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="bg-ambient"></div>
+
+  <div id="app-container">
+    <!-- Top TV Navigation -->
+    <div class="navbar clearfix">
+      <div class="nav-brand">
+        <span class="brand-title">NUVIO</span>
+        <span class="brand-badge">TIZEN 3.0</span>
+      </div>
+
+      <div class="nav-tabs" id="nav-tabs">
+        <div class="nav-tab active" data-tab="movie">Movies</div>
+        <div class="nav-tab" data-tab="series">TV Series</div>
+        <div class="nav-tab" data-tab="search">Search</div>
+      </div>
+
+      <div class="nav-right">
+        <span class="nav-info" id="source-indicator">Cinemeta + Direct Streams</span>
+        <div class="btn-custom-stream" id="btn-add-source">+ Add Addon</div>
+      </div>
+    </div>
+
+    <!-- Main Viewport -->
+    <div class="main-content">
+      <div class="section-header">
+        <h1 class="section-title" id="section-title">Popular Movies</h1>
+        <span class="section-subtitle" id="section-subtitle">Use D-Pad to Navigate • Enter to View • Down at end for Pages</span>
+        <div class="catalog-pagination" id="catalog-pagination">
+          <button class="catalog-page-button disabled" id="catalog-page-previous" type="button">‹ Previous</button>
+          <span class="catalog-page-label" id="catalog-page-label">Page 1</span>
+          <button class="catalog-page-button disabled" id="catalog-page-next" type="button">Next ›</button>
+        </div>
+      </div>
+
+      <div class="catalog-filter-bar" id="catalog-filter-bar">
+        <button class="catalog-filter-button" id="filter-category" data-filter="category" type="button">Category: <span>All</span> <b>▾</b></button>
+        <button class="catalog-filter-button" id="filter-year" data-filter="year" type="button">Year: <span>All years</span> <b>▾</b></button>
+        <button class="catalog-filter-button" id="filter-sort" data-filter="sort" type="button">Sort: <span>Popular</span> <b>▾</b></button>
+        <div class="catalog-filter-menu" id="catalog-filter-menu" style="display:none"></div>
+      </div>
+
+      <!-- Search Box (visible when search tab is active) -->
+      <div class="search-container" id="search-container">
+        <input type="text" id="search-input" class="search-input-box" placeholder="Search title (e.g. Batman, Avatar, Breaking Bad)..." />
+      </div>
+
+      <!-- Loading Indicator -->
+      <div class="loading-indicator" id="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading media catalog...</p>
+      </div>
+
+      <!-- Media Scroll Container -->
+      <div class="media-grid-scroll" id="media-scroll">
+        <div class="media-grid" id="media-grid"></div>
+      </div>
+    </div>
+
+    <!-- Details Screen Modal -->
+    <div id="details-modal">
+      <img id="details-backdrop" class="details-backdrop" src="" alt="Backdrop">
+      <div class="details-layout clearfix">
+        <div class="details-poster-col">
+          <img id="details-poster" class="details-poster-img" src="" alt="Poster">
+        </div>
+        <div class="details-info-col">
+          <h2 id="details-title" class="details-title"></h2>
+          <div class="details-tags">
+            <span id="details-year" class="tag-badge"></span>
+            <span id="details-rating" class="tag-badge tag-rating">★ 8.5</span>
+            <span id="details-genre" class="tag-badge"></span>
+          </div>
+          <p id="details-synopsis" class="details-synopsis"></p>
+
+          <div class="details-actions" id="details-actions">
+            <div class="action-btn focused" id="btn-play">▶ Play Now</div>
+            <div class="action-btn action-btn-secondary" id="btn-close-details">← Back to Catalog</div>
+          </div>
+
+          <!-- Series Episodes Selector -->
+          <div class="episodes-section" id="episodes-section">
+            <h3 class="episodes-title">Episodes</h3>
+            <div class="episodes-list" id="episodes-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Addons & Sources Manager Modal (nuvioplugin.com) -->
+    <div id="addons-modal">
+      <div class="addons-header">
+        <h2 class="addons-title">Nuvio Addons & Sources Manager</h2>
+        <p class="addons-subtitle">Install community scrapers & debrid sources from nuvioplugin.com for direct Tizen 3.0 playback</p>
+      </div>
+
+      <div class="addons-columns clearfix">
+        <!-- Left: Presets & Custom URL -->
+        <div class="addons-col-left">
+          <h3 class="addons-section-title">Recommended from nuvioplugin.com</h3>
+          
+          <div class="preset-card" id="preset-pengu">
+            <div class="preset-name">Pengu (Free HTTP)</div>
+            <div class="preset-desc">Top-rated free addon from nuvioplugin.com. No Debrid required. Direct HTTP streams.</div>
+            <div class="action-btn" id="btn-install-pengu" style="padding: 8px 18px; font-size: 15px;">+ Install Pengu</div>
+          </div>
+
+          <div class="preset-card" id="preset-torrentio">
+            <div class="preset-name">Torrentio (Debrid HTTP)</div>
+            <div class="preset-desc">Indexes millions of cached streams with Real-Debrid, AllDebrid, TorBox, or Premiumize.</div>
+            <div class="action-btn action-btn-secondary" id="btn-install-torrentio" style="padding: 8px 18px; font-size: 15px;">+ Configure Torrentio Debrid</div>
+          </div>
+
+          <div class="custom-addon-box">
+            <h4 style="font-size: 18px; margin-bottom: 10px; color: #ffffff;">Add Custom Manifest URL</h4>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Paste the full manifest URL. For configured subtitle addons, copy the personalized manifest URL from the addon's configuration page. Configuration paths and query parameters are preserved.</p>
+            <input type="text" id="input-custom-addon" class="custom-addon-input" placeholder="https://example.com/manifest.json" />
+            <div class="action-btn" id="btn-save-custom-addon" style="padding: 10px 22px; font-size: 16px;">Add Addon</div>
+          </div>
+        </div>
+
+        <!-- Right: Installed Addons -->
+        <div class="addons-col-right">
+          <h3 class="addons-section-title">Installed Active Sources</h3>
+          <div class="installed-list" id="installed-addons-list"></div>
+          <div style="margin-top: 25px; text-align: right;">
+            <div class="action-btn action-btn-secondary" id="btn-close-addons" style="padding: 12px 28px; font-size: 16px;">Done / Back</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Source Picker Modal -->
+    <div id="source-modal">
+      <div class="source-box">
+        <h2 class="source-title">Select Playback Stream</h2>
+        <p class="source-subtitle" id="source-subtitle">Direct HTTP/HLS streams compatible with Tizen 3.0 AVPlay</p>
+        <div class="source-list" id="source-list"></div>
+        <div style="margin-top: 24px; text-align: right;">
+          <div class="action-btn action-btn-secondary" id="btn-cancel-source" style="padding: 10px 24px; font-size: 16px;">Cancel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Video Player -->
+    <div id="player-container">
+      <video id="html5-video" preload="auto"></video>
+      <iframe id="embed-frame" src="" sandbox="allow-scripts allow-forms allow-presentation" referrerpolicy="no-referrer" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+
+      <!-- On-Screen Display (OSD) -->
+      <div class="player-osd" id="player-osd">
+        <div class="player-top-bar">
+          <span class="player-stream-title" id="player-title">Playing</span>
+          <span class="player-engine-indicator" id="player-engine-tag">AVPlay</span>
+        </div>
+
+        <div class="player-track-picker" id="player-track-picker" style="display:none;">
+          <h2 class="player-track-title" id="player-track-title">Choose track</h2>
+          <div class="player-track-list" id="player-track-list"></div>
+          <div class="player-track-hint">▲ / ▼ Select · OK Apply · Back Close</div>
+        </div>
+
+        <div class="subtitle-delay-panel" id="subtitle-delay-panel" style="display:none;">
+          <h2 class="player-track-title">Subtitle delay</h2>
+          <div class="subtitle-delay-value" id="subtitle-delay-value">0.00 s</div>
+          <div class="subtitle-delay-scale"><span>Earlier</span><span>Later</span></div>
+          <input class="subtitle-delay-slider" id="subtitle-delay-slider" type="range" min="-10000" max="10000" step="250" value="0" aria-label="Subtitle delay" />
+          <div class="player-track-hint">◀ / ▶ Adjust by 0.25 s · ▲ / ▼ by 1 s · OK or Back Close</div>
+        </div>
+
+        <div class="player-center-buffering" id="player-buffering">
+          <div class="spinner"></div>
+          <p id="player-buffering-text">Buffering stream...</p>
+        </div>
+
+        <div class="player-bottom-bar">
+          <div class="player-progress-container">
+            <div class="player-progress-bar" id="player-progress"></div>
+          </div>
+
+          <div class="player-controls-row clearfix">
+            <div class="player-time-label" id="player-time">00:00 / 00:00</div>
+            <div class="player-btn-controls">
+              <div class="player-osd-btn" id="btn-osd-rw">⏪ -10s</div>
+              <div class="player-osd-btn focused" id="btn-osd-play">⏯ Play/Pause</div>
+              <div class="player-osd-btn" id="btn-osd-ff">⏩ +10s</div>
+              <div class="player-osd-btn" id="btn-osd-audio">♪ Audio</div>
+              <div class="player-osd-btn" id="btn-osd-subtitles">CC Subtitles</div>
+              <div class="player-osd-btn" id="btn-osd-subtitle-delay">Subtitle delay</div>
+              <div class="player-osd-btn" id="btn-osd-stop">⏹ Stop</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts in dependency order (Strict ES5) -->
+  <script src="js/tizen-remote.js?v=3"></script>
+  <script src="js/api.js?v=10"></script>
+  <script src="js/player.js?v=9"></script>
+  <script src="js/app.js?v=8"></script>
+</body>
+</html>
