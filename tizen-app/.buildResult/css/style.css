@@ -1,0 +1,1181 @@
+/* ==========================================================================
+   Nuvio TV Lite - Tizen 3.0 (Chromium 47) Compatible Stylesheet
+   Designed for 10-foot TV experience (1920x1080 canvas)
+   NO CSS Grid, NO Flexbox gap, NO backdrop-filter, NO CSS min/max
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background-color: #0c0f17;
+  color: #f0f4f8;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 20px;
+  line-height: 1.4;
+  position: relative;
+}
+
+/* Background ambient glow */
+.bg-ambient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 15% 15%, rgba(45, 55, 120, 0.25) 0%, rgba(12, 15, 23, 0.98) 70%);
+  z-index: 1;
+}
+
+#app-container {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Top Navigation Bar */
+.navbar {
+  width: 100%;
+  height: 100px;
+  padding: 24px 60px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(14, 18, 28, 0.85);
+}
+
+.nav-brand {
+  float: left;
+  line-height: 52px;
+  margin-right: 50px;
+}
+
+.brand-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.brand-badge {
+  display: inline-block;
+  vertical-align: middle;
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  letter-spacing: 0.5px;
+}
+
+.nav-tabs {
+  float: left;
+}
+
+.nav-tab {
+  display: inline-block;
+  padding: 12px 28px;
+  margin-right: 15px;
+  border-radius: 30px;
+  color: #94a3b8;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: transparent;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-tab.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-tab.focused {
+  color: #0c0f17;
+  background-color: #00d2ff;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.7);
+  transform: scale(1.05);
+}
+
+.nav-right {
+  float: right;
+  line-height: 52px;
+}
+
+.nav-info {
+  font-size: 16px;
+  color: #64748b;
+  margin-right: 20px;
+}
+
+.btn-custom-stream {
+  display: inline-block;
+  padding: 8px 20px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-custom-stream.focused {
+  background-color: #00d2ff;
+  color: #0c0f17;
+  border-color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+}
+
+/* Clearfix */
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Main Viewport Container */
+.main-content {
+  width: 100%;
+  height: 980px;
+  padding: 40px 60px;
+  overflow-y: hidden;
+  position: relative;
+}
+
+/* Category header */
+.section-header {
+  margin-bottom: 25px;
+  position: relative;
+  min-height: 40px;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin-left: 15px;
+  display: inline-block;
+}
+
+.catalog-pagination {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 42px;
+  white-space: nowrap;
+}
+
+.catalog-page-button {
+  min-width: 132px;
+  height: 42px;
+  padding: 0 16px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.catalog-page-button.focused {
+  color: #0c0f17;
+  background: #00d2ff;
+  border-color: #ffffff;
+}
+
+.catalog-page-button.disabled {
+  color: #64748b;
+  background: rgba(30, 41, 59, 0.55);
+}
+
+.catalog-page-label {
+  display: inline-block;
+  min-width: 86px;
+  padding: 0 10px;
+  color: #cbd5e1;
+  font-size: 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.catalog-filter-bar {
+  height: 54px;
+  margin: -8px 0 20px;
+  position: relative;
+  z-index: 30;
+}
+
+.catalog-filter-button {
+  display: inline-block;
+  min-width: 220px;
+  height: 50px;
+  margin-right: 14px;
+  padding: 0 18px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #cbd5e1;
+  background: #1e293b;
+  font: inherit;
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.catalog-filter-button span {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.catalog-filter-button b {
+  float: right;
+  color: #94a3b8;
+}
+
+.catalog-filter-button.focused,
+.catalog-filter-button:focus {
+  color: #0c0f17;
+  background: #00d2ff;
+  border-color: #ffffff;
+  outline: none;
+}
+
+.catalog-filter-button.focused span,
+.catalog-filter-button:focus span,
+.catalog-filter-button.focused b,
+.catalog-filter-button:focus b {
+  color: #0c0f17;
+}
+
+.catalog-filter-menu {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  width: 250px;
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: #111827;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  scrollbar-width: thin;
+  scrollbar-color: #475569 transparent;
+}
+
+.catalog-filter-menu.menu-year {
+  left: 234px;
+  width: 180px;
+}
+
+.catalog-filter-menu.menu-sort {
+  left: 468px;
+  width: 230px;
+}
+
+.catalog-filter-option {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 9px 14px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: #cbd5e1;
+  background: transparent;
+  font: inherit;
+  font-size: 17px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.catalog-filter-option.focused {
+  color: #0c0f17;
+  background: #00d2ff;
+  border-color: #ffffff;
+}
+
+/* Search bar inside search view */
+.search-container {
+  margin-bottom: 30px;
+  display: none;
+}
+
+.search-input-box {
+  width: 600px;
+  padding: 14px 24px;
+  background-color: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 20px;
+  outline: none;
+}
+
+.search-input-box.focused {
+  border-color: #00d2ff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+}
+
+/* Media Grid Layout (5 columns using inline-block, compatible with Chromium 47) */
+.media-grid-scroll {
+  width: 100%;
+  height: 750px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #475569 transparent;
+}
+
+.media-grid {
+  width: 1820px;
+  font-size: 0; /* eliminate inline-block white space */
+}
+
+.media-card {
+  display: inline-block;
+  vertical-align: top;
+  width: 336px; /* (1800 - 4*30) / 5 */
+  margin-right: 30px;
+  margin-bottom: 40px;
+  background-color: #161c2d;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 16px;
+}
+
+.media-card:nth-child(5n) {
+  margin-right: 0;
+}
+
+.media-card.focused {
+  border-color: #00d2ff;
+  transform: scale(1.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 210, 255, 0.7);
+  z-index: 10;
+  position: relative;
+}
+
+.media-poster-box {
+  width: 100%;
+  height: 380px;
+  background-color: #1e293b;
+  position: relative;
+  overflow: hidden;
+}
+
+.media-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.media-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.media-info {
+  padding: 16px;
+  min-height: 106px;
+}
+
+.media-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 24px;
+  height: 48px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 6px;
+  overflow-wrap: break-word;
+}
+
+.media-meta {
+  font-size: 14px;
+  line-height: 20px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Loading Banner */
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #cbd5e1;
+  display: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 16px auto;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #00d2ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Details Modal / Screen
+   ========================================================================== */
+#details-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  background-color: #0a0d17;
+  z-index: 100;
+  display: none;
+  padding: 80px 100px;
+  overflow: hidden;
+}
+
+.details-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+.details-layout {
+  width: 100%;
+  height: 100%;
+}
+
+.details-poster-col {
+  float: left;
+  width: 400px;
+}
+
+.details-poster-img {
+  width: 380px;
+  height: 570px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  object-fit: cover;
+}
+
+.details-info-col {
+  float: left;
+  width: 1300px;
+  padding-left: 60px;
+}
+
+.details-title {
+  max-width: 100%;
+  font-size: 46px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.16;
+  margin-bottom: 12px;
+  overflow-wrap: break-word;
+}
+
+.details-tags {
+  margin-bottom: 25px;
+}
+
+.tag-badge {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-right: 12px;
+}
+
+.tag-rating {
+  background-color: #eab308;
+  color: #0c0f17;
+  font-weight: 800;
+}
+
+.details-synopsis {
+  font-size: 20px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 1100px;
+  margin-bottom: 35px;
+  max-height: 160px;
+  overflow: hidden;
+}
+
+/* Actions buttons in details */
+.details-actions {
+  margin-bottom: 35px;
+}
+
+.action-btn {
+  display: inline-block;
+  padding: 16px 36px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 20px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.action-btn.focused {
+  background-color: #00d2ff;
+  color: #0c0f17;
+  border-color: #ffffff;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
+  transform: scale(1.05);
+}
+
+.action-btn-secondary {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+}
+
+/* Episodes selector for TV Series */
+.episodes-section {
+  display: none;
+  margin-top: 15px;
+}
+
+.episodes-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 15px;
+}
+
+.episodes-list {
+  width: 1100px;
+  height: 160px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  font-size: 0;
+}
+
+.episode-card {
+  display: inline-block;
+  width: 240px;
+  height: 130px;
+  background-color: #1e293b;
+  border-radius: 8px;
+  padding: 16px;
+  margin-right: 18px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  vertical-align: top;
+}
+
+.episode-card.focused {
+  border-color: #00d2ff;
+  background-color: #2b3a54;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+}
+
+.episode-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 6px;
+}
+
+.episode-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: normal;
+  line-height: 1.3;
+  max-height: 63px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+/* ==========================================================================
+   Stream Sources Picker Modal
+   ========================================================================== */
+#source-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  box-sizing: border-box;
+  background-color: #070913;
+  z-index: 200;
+  display: none;
+  padding: 80px 400px;
+  overflow: hidden;
+}
+
+.source-box {
+  width: 100%;
+  max-height: 920px;
+  background-color: #131929;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.source-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.source-subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+  margin-bottom: 30px;
+}
+
+.source-list {
+  max-height: 620px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.source-item {
+  display: block;
+  width: 100%;
+  padding: 18px 24px;
+  background-color: #1e293b;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  color: #ffffff;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.source-item.focused {
+  background-color: #00d2ff;
+  color: #0c0f17;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.7);
+}
+
+.source-item-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.source-item-detail {
+  font-size: 14px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   Fullscreen Video Player & OSD
+   ========================================================================== */
+#player-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  background-color: #000000;
+  z-index: 500;
+  display: none;
+}
+
+#html5-video {
+  width: 1920px;
+  height: 1080px;
+  object-fit: contain;
+  background-color: #000000;
+  display: block;
+}
+
+#embed-frame {
+  width: 1920px;
+  height: 1080px;
+  border: none;
+  background-color: #000000;
+  display: none;
+}
+
+.player-osd {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 25%, transparent 70%, rgba(0,0,0,0.92) 100%);
+  padding: 50px 80px;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.player-top-bar {
+  width: 100%;
+}
+
+.player-stream-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.player-engine-indicator {
+  display: inline-block;
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-left: 15px;
+  vertical-align: middle;
+}
+
+.player-center-buffering {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: none;
+}
+
+.player-bottom-bar {
+  position: absolute;
+  bottom: 50px;
+  left: 80px;
+  right: 80px;
+}
+
+.player-progress-container {
+  width: 100%;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.player-progress-bar {
+  width: 0%;
+  height: 100%;
+  background-color: #00d2ff;
+  border-radius: 5px;
+}
+
+.player-controls-row {
+  width: 100%;
+  line-height: 40px;
+}
+
+.player-time-label {
+  float: left;
+  font-size: 20px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.player-btn-controls {
+  float: right;
+}
+
+.player-osd-btn {
+  display: inline-block;
+  padding: 8px 24px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 14px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.player-osd-btn.focused {
+  background-color: #00d2ff;
+  color: #0c0f17;
+  border-color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.8);
+}
+
+.player-track-picker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 620px;
+  max-height: 900px;
+  overflow: hidden;
+  padding: 32px 38px;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  background: rgba(8, 11, 20, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.65);
+}
+
+.subtitle-delay-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 700px;
+  padding: 36px 42px;
+  transform: translate(-50%, -50%);
+  background: rgba(8, 11, 20, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.65);
+}
+
+.subtitle-delay-value {
+  margin: 4px 0 20px;
+  color: #00d2ff;
+  font-size: 36px;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.subtitle-delay-scale {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+  font-size: 16px;
+}
+
+.subtitle-delay-scale span:first-child {
+  float: left;
+}
+
+.subtitle-delay-scale span:last-child {
+  float: right;
+}
+
+.subtitle-delay-slider {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin: 0 0 20px;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.subtitle-delay-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background: #475569;
+  border-radius: 4px;
+}
+
+.subtitle-delay-slider::-webkit-slider-thumb {
+  width: 28px;
+  height: 28px;
+  margin-top: -10px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #00d2ff;
+  -webkit-appearance: none;
+}
+
+.player-track-title {
+  margin: 0 0 22px;
+  color: #ffffff;
+  font-size: 28px;
+}
+
+.player-track-list {
+  max-height: 680px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.player-track-option {
+  padding: 15px 18px;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-size: 20px;
+}
+
+.player-track-option.focused {
+  color: #0c0f17;
+  background: #00d2ff;
+  border-color: #ffffff;
+}
+
+.player-track-option.selected:after {
+  content: '  ✓';
+  font-weight: 700;
+}
+
+.player-track-empty {
+  padding: 20px 5px;
+  color: #cbd5e1;
+  font-size: 19px;
+}
+
+.player-track-hint {
+  margin-top: 18px;
+  color: #94a3b8;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Addons & Sources Manager Modal (nuvioplugin.com)
+   ========================================================================== */
+#addons-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  background-color: #080b14;
+  z-index: 300;
+  display: none;
+  padding: 80px 100px;
+  overflow: hidden;
+}
+
+.addons-header {
+  margin-bottom: 30px;
+}
+
+.addons-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.addons-subtitle {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.addons-columns {
+  width: 100%;
+  height: 720px;
+}
+
+.addons-col-left {
+  float: left;
+  width: 820px;
+  padding-right: 40px;
+}
+
+.addons-col-right {
+  float: right;
+  width: 900px;
+  padding-left: 40px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.addons-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 20px;
+}
+
+.preset-card {
+  background-color: #161f33;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 2px solid transparent;
+}
+
+.preset-card.focused {
+  border-color: #00d2ff;
+  background-color: #1e2b45;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+}
+
+.preset-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.preset-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 14px;
+}
+
+.custom-addon-box {
+  background-color: #161f33;
+  border-radius: 10px;
+  padding: 24px;
+  margin-top: 25px;
+}
+
+.custom-addon-input {
+  width: 100%;
+  padding: 12px 18px;
+  background-color: #0c0f17;
+  border: 2px solid #334155;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 16px;
+  margin-bottom: 15px;
+  outline: none;
+}
+
+.custom-addon-input.focused {
+  border-color: #00d2ff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+}
+
+.installed-list {
+  height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.installed-item {
+  background-color: #161f33;
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin-bottom: 14px;
+  border: 2px solid transparent;
+  line-height: 36px;
+}
+
+.installed-item.focused {
+  border-color: #00d2ff;
+  background-color: #1e2b45;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+}
+
+.installed-item-info {
+  float: left;
+  max-width: 600px;
+}
+
+.installed-item-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.installed-item-url {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 580px;
+}
+
+.installed-item-actions {
+  float: right;
+}
+
+.badge-active {
+  display: inline-block;
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+.badge-disabled {
+  display: inline-block;
+  background-color: #64748b;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+.btn-remove-addon {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+

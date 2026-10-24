@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="https://nuvio.lite" version="1.1.0" viewmodes="maximized">
+  <access origin="*" subdomains="true"/>
+  <tizen:application id="NuvioTV030.NuvioLite" package="NuvioTV030" required_version="2.4"/>
+  <author href="https://nuvio.tv">Nuvio Lite Team</author>
+  <content src="index.html"/>
+  <feature name="http://tizen.org/feature/screen.size.all"/>
+  <feature name="http://tizen.org/feature/web.service"/>
+  <icon src="icon.png"/>
+  <name>Nuvio TV Lite</name>
+  <tizen:privilege name="http://tizen.org/privilege/internet"/>
+  <tizen:privilege name="http://tizen.org/privilege/download"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+  <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+  <tizen:privilege name="http://developer.samsung.com/privilege/network.public"/>
+  <tizen:privilege name="http://developer.samsung.com/privilege/avplay"/>
+  <tizen:service id="NuvioTV030.EngineFsService" type="ui" auto-restart="false" on-boot="false">
+    <tizen:content src="services/tizen/enginefs-service.js"/>
+    <tizen:name>Nuvio EngineFS Service</tizen:name>
+    <tizen:icon src="icon.png"/>
+    <tizen:description>Local media streaming proxy for Nuvio Lite Tizen playback</tizen:description>
+    <tizen:category name="http://tizen.org/category/service"/>
+  </tizen:service>
+  <tizen:service id="NuvioTV030.PluginService" type="ui" auto-restart="false" on-boot="false">
+    <tizen:content src="services/tizen/plugin-service.js"/>
+    <tizen:name>Nuvio Plugin Network Service</tizen:name>
+    <tizen:icon src="icon.png"/>
+    <tizen:description>Bounded network service for Nuvio Lite JavaScript plugins</tizen:description>
+    <tizen:category name="http://tizen.org/category/service"/>
+  </tizen:service>
+  <tizen:profile name="tv-samsung"/>
+  <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable" install-location="auto"/>
+</widget>

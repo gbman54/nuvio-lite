@@ -69,7 +69,7 @@ rea/
 
 ### 1. Prerequisites
 - **Node.js** (v18 or higher recommended)
-- **Samsung Tizen Studio CLI** (optional, required only for TV installation)
+- **Samsung Tizen Studio CLI** and a valid signing profile (required to create an installable TV package)
 
 ### 2. Local Development & Testing
 
@@ -99,11 +99,13 @@ npm run verify
 *Validates `api.js`, `app.js`, `player.js`, and `tizen-remote.js` using Acorn `ecmaVersion: 5`.*
 
 ### Packaging Tizen WGT
-Generate the installation `.wgt` archive:
+Create a signed installation package with the Tizen CLI. Set these PowerShell variables to your Tizen Studio CLI path and certificate profile name first:
 ```bash
+$env:TIZEN_CLI = 'C:\tizen-studio\tools\ide\bin\tizen.bat'
+$env:TIZEN_PROFILE = 'YourCertificateProfile'
 npm run package
 ```
-*Creates `nuvio-lite-tizen3.wgt` in the project root.*
+This runs `tizen build-web` and `tizen package -t wgt -s <profile>`, then writes `nuvio-lite-tizen3.wgt` in the project root. A plain ZIP renamed to `.wgt` is not an installable Tizen package.
 
 ---
 
@@ -111,16 +113,12 @@ npm run package
 
 ### Recommended: TizenBrew Installer Desktop
 
-1. Build the package on your PC from the project folder:
-   ```bash
-   npm run package
-   ```
-   This creates `nuvio-lite-tizen3.wgt` in the project root.
+1. Build a signed package as described above. This creates `nuvio-lite-tizen3.wgt` in the project root.
 2. Connect the TV and PC to the same network. On the TV, open **Apps**, enter `12345` on the remote, enable **Developer Mode**, set **Host PC IP** to your PC's local network IP address, confirm, and restart the TV.
 3. On the PC, run [TizenBrew Installer Desktop](https://github.com/reisxd/TizenBrewInstaller/releases). Choose the option to install a local `.wgt`/`.tpk` file and select `nuvio-lite-tizen3.wgt`.
 4. When installation finishes, launch **Nuvio TV Lite** from the TV's Apps screen.
 
-TizenBrew itself is the TV-side app/module manager. For a local project WGT, use its companion **TizenBrew Installer Desktop**; the desktop installer handles the TV connection and installation. The packaged app includes the EngineFS and Plugin background services, so you do not need to run `npm start` on the PC during playback.
+TizenBrew itself is the TV-side app/module manager. For a local project WGT, use its companion **TizenBrew Installer Desktop**. For **Install from GitHub**, publish a GitHub Release containing the signed `.wgt` asset; the installer installs the release package rather than building the source tree. The packaged app includes the EngineFS and Plugin background services, so you do not need to run `npm start` on the PC during playback.
 
 ### Alternative: Tizen Studio CLI
 
