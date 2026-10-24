@@ -102,7 +102,7 @@
           var textEl = document.getElementById('player-buffering-text');
           if (bufEl && textEl) {
             bufEl.style.display = 'block';
-            textEl.textContent = 'Playback error or unsupported format.';
+            textEl.textContent = err && err.message ? err.message : 'Playback error or unsupported format.';
           }
         },
         unavailable: function(info) {

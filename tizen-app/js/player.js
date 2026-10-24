@@ -33,6 +33,11 @@
     embedEl: null,
     containerEl: null,
     activeUrl: null,
+    originalStreamUrl: null,
+    playbackId: 0,
+    avplayAttemptId: 0,
+    avplayStartupTimer: null,
+    avplayProxyRetryUsed: false,
     currentTitle: '',
     isPlayingState: false,
     isEmbedMode: false,
@@ -172,6 +177,43 @@
       } catch (e) {
         return targetUrl;
       }
+    },
+
+    _clearAvplayStartupTimer: function() {
+      if (this.avplayStartupTimer) {
+        window.clearTimeout(this.avplayStartupTimer);
+        this.avplayStartupTimer = null;
+      }
+    },
+
+    _startAvplayStartupWatchdog: function(url, headers, playbackId, attemptId) {
+      var self = this;
+      this._clearAvplayStartupTimer();
+      this.avplayStartupTimer = window.setTimeout(function() {
+        self.avplayStartupTimer = null;
+        if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId || self.currentTimeMs > 0) return;
+
+        if (!self.avplayProxyRetryUsed && self.proxyAvailable &&
+            url.indexOf('/proxy/') === -1 && self.originalStreamUrl) {
+          self.avplayProxyRetryUsed = true;
+          var proxyUrl = self.buildProxyUrl(self.originalStreamUrl, headers);
+          console.warn('[Player] TV stream did not start; retrying through EngineFS Proxy');
+          self.activeUrl = proxyUrl;
+          self._playWithAvPlay(proxyUrl, headers, playbackId);
+          return;
+        }
+
+        self.isPlayingState = false;
+        console.error('[Player] TV stream did not start within 30 seconds', {
+          proxied: url.indexOf('/proxy/') !== -1,
+          proxyAvailable: self.proxyAvailable
+        });
+        self._notify('buffering', false);
+        self._notify('error', {
+          message: 'The TV could not start this stream. Try another source or stream quality.',
+          url: url
+        });
+      }, 30000);
     },
 
     _bindHtml5Events: function() {
@@ -727,6 +769,9 @@
     },
 
     play: function(streamOrUrl, title) {
+      this.playbackId += 1;
+      this._clearAvplayStartupTimer();
+      this.avplayProxyRetryUsed = false;
       this.subtitleDelayMs = 0;
       var rawUrl = '';
       var headers = null;
@@ -749,6 +794,7 @@
       this._removeExternalSubtitleElements();
 
       this.currentTitle = title || 'Playing Stream';
+      this.originalStreamUrl = rawUrl;
       this.currentTimeMs = 0;
       this.durationMs = 0;
       this.activeHeaders = headers;
@@ -826,9 +872,12 @@
       this._notify('play');
     },
 
-    _playWithAvPlay: function(url, headers) {
+    _playWithAvPlay: function(url, headers, playbackId) {
       var self = this;
       var avplay = this.avplay;
+      playbackId = playbackId || this.playbackId;
+      this.avplayAttemptId += 1;
+      var attemptId = this.avplayAttemptId;
 
       if (this.videoEl) {
         this.videoEl.style.display = 'none';
@@ -853,16 +902,24 @@
 
         avplay.setListener({
           onbufferingstart: function() {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
             self._notify('buffering', true);
           },
           onbufferingprogress: function(percent) {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
             self._notify('bufferingProgress', percent);
           },
           onbufferingcomplete: function() {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
             self._notify('buffering', false);
           },
           oncurrentplaytime: function(timeMs) {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
             self.currentTimeMs = timeMs;
+            if (timeMs > 0) {
+              self._clearAvplayStartupTimer();
+              self._notify('buffering', false);
+            }
             try {
               self.durationMs = avplay.getDuration();
             } catch (e) {}
@@ -872,17 +929,23 @@
             });
           },
           onstreamcompleted: function() {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
+            self._clearAvplayStartupTimer();
             self.isPlayingState = false;
             self._notify('ended');
           },
           onerror: function(err) {
+            if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
+            self._clearAvplayStartupTimer();
             console.error('[AVPlay Error]', err);
             self.engine = 'html5';
             self._playWithHtml5(url, headers);
           }
         });
 
+        this._startAvplayStartupWatchdog(url, headers, playbackId, attemptId);
         avplay.prepareAsync(function() {
+          if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
           try {
             self.durationMs = avplay.getDuration();
             avplay.play();
@@ -896,6 +959,8 @@
             console.error('[AVPlay Play Threw]', err);
           }
         }, function(prepareErr) {
+          if (self.playbackId !== playbackId || self.avplayAttemptId !== attemptId) return;
+          self._clearAvplayStartupTimer();
           console.error('[AVPlay Prepare Failed, falling back to HTML5]', prepareErr);
           self.engine = 'html5';
           self._playWithHtml5(url, headers);
@@ -1103,9 +1168,12 @@
     },
 
     stop: function() {
+      this.playbackId += 1;
+      this._clearAvplayStartupTimer();
       this.isPlayingState = false;
       this.isEmbedMode = false;
       this.activeUrl = null;
+      this.originalStreamUrl = null;
 
       if (this.embedEl) {
         this.embedEl.src = '';
